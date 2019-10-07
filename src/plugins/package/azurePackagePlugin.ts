@@ -1,9 +1,9 @@
 
 import Serverless from "serverless";
+import { ServerlessCliCommand } from "../../models/serverless";
 import AzureProvider from "../../provider/azureProvider";
 import { PackageService } from "../../services/packageService";
 import { AzureBasePlugin } from "../azureBasePlugin";
-import { ServerlessCliCommand } from "../../models/serverless";
 
 export class AzurePackagePlugin extends AzureBasePlugin {
   private bindingsCreated: boolean = false;
@@ -31,6 +31,7 @@ export class AzurePackagePlugin extends AzureBasePlugin {
     }
     packageService.cleanUpServerlessDir();
     await packageService.createBindings();
+
     this.bindingsCreated = true;
 
     return Promise.resolve();
@@ -60,6 +61,7 @@ export class AzurePackagePlugin extends AzureBasePlugin {
       this.log("No need to clean up generated folders & files. Using pre-existing package");
       return Promise.resolve();
     }
+
     await packageService.cleanUp();
   }
 }

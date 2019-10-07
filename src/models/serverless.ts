@@ -26,6 +26,7 @@ export interface DeploymentConfig {
   rollback?: boolean;
   container?: string;
   external?: boolean;
+  enableRemoteBuild?: boolean;
 }
 
 export interface ServerlessAzureProvider {
@@ -55,13 +56,24 @@ export interface ServerlessAzureProvider {
   virtualNetwork?: ResourceConfig;
   armTemplate?: ArmTemplateConfig;
   keyVaultConfig?: AzureKeyVaultConfig;
-  runtime: string;
+  /** Runtime setting within `serverless.yml` */
+  runtime: Runtime;
+  /** Only to be used internally. Derived from `runtime` property */
   functionRuntime?: FunctionRuntime;
+  os?: FunctionAppOS;
 }
 
 export enum FunctionAppOS {
   WINDOWS = "windows",
   LINUX = "linux"
+}
+
+export enum Runtime {
+  NODE10 = "nodejs10",
+  NODE12 = "nodejs12",
+  PYTHON36 = "python3.6",
+  PYTHON37 = "python3.7",
+  PYTHON38 = "python3.8",
 }
 
 export interface FunctionRuntime {
@@ -157,6 +169,8 @@ export interface ServerlessAzureConfig {
     individually: boolean;
     artifactDirectoryName: string;
     artifact: string;
+    exclude: string[];
+    include: string[];
   };
 }
 

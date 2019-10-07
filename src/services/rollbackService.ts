@@ -56,6 +56,7 @@ export class RollbackService extends BaseService {
     const armDeployment = await this.convertToArmDeployment(deployment);
     // Initialize blob service for either creating SAS token or downloading artifact to uplod to function app
     await this.blobService.initialize();
+
     if (this.config.provider.deployment.external) {
       // Set functionRunFromPackage param to SAS URL of blob
       armDeployment.parameters.functionAppRunFromPackage = {
@@ -66,6 +67,7 @@ export class RollbackService extends BaseService {
         )
       }
     }
+
     await armService.deployTemplate(armDeployment);
     /**
      * Cannot use an `else` statement just because deploying the artifact
@@ -98,7 +100,7 @@ export class RollbackService extends BaseService {
   private async redeployArtifact(artifactPath: string) {
     const functionAppService = new FunctionAppService(this.serverless, this.options);
     const functionApp = await functionAppService.get();
-    await functionAppService.uploadZippedArfifactToFunctionApp(functionApp, artifactPath);
+    await functionAppService.uploadZippedArtifactToFunctionApp(functionApp, artifactPath);
     if (fs.existsSync(artifactPath)) {
       fs.unlinkSync(artifactPath);
     }
