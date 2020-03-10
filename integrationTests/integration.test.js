@@ -1,5 +1,5 @@
 const { spawn } = require("child_process")
-const { readdirSync } = require("fs")
+const { readdirSync } = require("fs");
 
 // const tests = getDirectories();
 
@@ -10,7 +10,12 @@ for (const test of tests) {
 }
 
 function integrationTest(testName) {
-  const deploy = spawn("sls", ["--version"], {
+  let command = "sls";
+  if (process.platform === "win32") {
+    command += ".cmd";
+  }
+
+  const deploy = spawn(command, ["offline", "cleanup"], {
     env: process.env,
     cwd: testName
   });
