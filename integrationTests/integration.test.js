@@ -1,47 +1,69 @@
 const { spawn } = require("child_process")
 const { readdirSync } = require("fs");
 
-// const tests = getDirectories();
+const tests = getDirectories();
 
-const tests = [ "http-node10-linux" ]
+// const tests = [ "http-node10-linux" ]
 
 for (const test of tests) {
   integrationTest(test);
 }
 
 function integrationTest(testName) {
-  let command = "sls";
-  if (process.platform === "win32") {
-    command += ".cmd";
-  }
+  console.log(`Running test: ${testName}`);
 
-  const deploy = spawn(command, ["offline", "cleanup"], {
+  const npm = getCommand("npm");
+  const link = createSpawn(
+    testName,
+    npm,
+    ["link", "serverless-azure-functions"],
+    // () => deployTest(testName),
+    () => console.log("link succeeded"),
+    () => console.log("link failed"));
+}
+
+function deployTest(testName) {
+  const sls = getCommand("sls");
+}
+
+function createSpawn(cwd, command, args, onPass, onFail) {
+  const childProcess = spawn(command, args, {
     env: process.env,
-    cwd: testName
+    cwd,
   });
 
   let stdout = "";
   let stderr = "";
 
-  deploy.stderr.on("data", (data) => {
+  childProcess.stderr.on("data", (data) => {
     stderr += data.toString();
   });
 
-  deploy.stdout.on("data", (data) => {
+  childProcess.stdout.on("data", (data) => {
     stdout += data.toString();
   });
 
-  deploy.on("error", (err) => {
+  childProcess.on("error", (err) => {
     stderr += `Failed to start subprocess:\n${err.message} ${err.stack}`;
   });
 
-  deploy.on("close", (code) => {
+  childProcess.on("close", (code) => {
     if (code === 0) {
-      console.log(`${testName} Exited successfully with output:\n${stdout}`);
+      // console.log(`${testName} passed.\nstderr:\n${stderr}stdout:\n${stdout}`);
+      onPass();
     } else {
-      console.error(`${testName} failed with stderr:\n${stderr}`);
+      // console.error(`${testName} failed.\nstderr:\n${stderr}stdout:\n${stdout}`);
+      onFail();
     }
   });
+  return childProcess
+}
+
+function getCommand(command) {
+  if (process.platform === "win32") {
+    return command + ".cmd";
+  }
+  return command;
 }
 
 function getDirectories(source = ".") {
