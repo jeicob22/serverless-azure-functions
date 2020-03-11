@@ -9,3 +9,4 @@ node_modules/
 **/.serverless/
 .python_packages/
 __pycache__/
+integrationTests/**/hello

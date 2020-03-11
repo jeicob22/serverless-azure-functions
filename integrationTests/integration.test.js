@@ -1,9 +1,11 @@
 const { spawn } = require("child_process")
 const { readdirSync } = require("fs");
 
-const tests = getDirectories();
+// const tests = getDirectories();
 
-// const tests = [ "http-node10-linux" ]
+tests = [ "http-node10-windows" ];
+
+
 
 for (const test of tests) {
   integrationTest(test);
@@ -17,13 +19,36 @@ function integrationTest(testName) {
     testName,
     npm,
     ["link", "serverless-azure-functions"],
-    // () => deployTest(testName),
-    () => console.log("link succeeded"),
-    () => console.log("link failed"));
+    () => slsTest(
+        testName,
+        ["deploy"],
+        () => slsTest(
+          testName,
+          ["invoke", "-f", "hello", "-d", '{"name": "Azure"}'],
+          () => slsTest(
+            testName,
+            ["remove"],
+            () => console.log(`Test ${testName} PASSED`)
+          ))),
+    () => console.log("link failed")
+  );
 }
 
-function deployTest(testName) {
+function slsTest(testName, args, onSuccess) {
+  console.log(`Running ${args.join(" ")} test for ${testName}`);
   const sls = getCommand("sls");
+  const command = createSpawn(
+    testName,
+    sls,
+    args,
+    (stdout, stderr) => {
+      // TODO evaluate output for command
+      onSuccess();
+    },
+    (stdout, stderr) => {
+      // TODO record error for deploy failure
+    }
+  )
 }
 
 function createSpawn(cwd, command, args, onPass, onFail) {
@@ -40,6 +65,7 @@ function createSpawn(cwd, command, args, onPass, onFail) {
   });
 
   childProcess.stdout.on("data", (data) => {
+    console.log(data.toString());
     stdout += data.toString();
   });
 
@@ -50,10 +76,10 @@ function createSpawn(cwd, command, args, onPass, onFail) {
   childProcess.on("close", (code) => {
     if (code === 0) {
       // console.log(`${testName} passed.\nstderr:\n${stderr}stdout:\n${stdout}`);
-      onPass();
+      onPass(stdout, stderr);
     } else {
       // console.error(`${testName} failed.\nstderr:\n${stderr}stdout:\n${stdout}`);
-      onFail();
+      onFail(stdout, stderr);
     }
   });
   return childProcess
