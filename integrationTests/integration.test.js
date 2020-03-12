@@ -3,13 +3,26 @@ const { readdirSync } = require("fs");
 
 // const tests = getDirectories();
 
-tests = [ "http-node10-windows" ];
-
-
+const tests = [ "node10-linux" ];
 
 for (const test of tests) {
   integrationTest(test);
 }
+
+// const s = spawn("npm.cmd", ["link", "serverless-azure-functions"], {
+//   env: process.env,
+//   cwd: "node10-linux",
+// });
+
+// s.stderr.on("data", (data) => {
+//   console.log(data.toString());
+// });
+
+// s.stdout.on("data", (data) => {
+//   console.log(data.toString());
+// });
+
+// s.on("close", (code) => console.log(code));
 
 function integrationTest(testName) {
   console.log(`Running test: ${testName}`);
@@ -19,17 +32,20 @@ function integrationTest(testName) {
     testName,
     npm,
     ["link", "serverless-azure-functions"],
+    //() => console.log("link succeeded"),
     () => slsTest(
         testName,
-        ["deploy"],
-        () => slsTest(
-          testName,
-          ["invoke", "-f", "hello", "-d", '{"name": "Azure"}'],
-          () => slsTest(
-            testName,
-            ["remove"],
-            () => console.log(`Test ${testName} PASSED`)
-          ))),
+        ["package"],
+        () => console.log("built")),
+        // ["deploy"],
+        // () => slsTest(
+        //   testName,
+        //   ["invoke", "-f", "hello", "-d", '{"name": "Azure"}'],
+        //   () => slsTest(
+        //     testName,
+        //     ["remove"],
+        //     () => console.log(`Test ${testName} PASSED`)
+        //   ))),
     () => console.log("link failed")
   );
 }
@@ -52,6 +68,7 @@ function slsTest(testName, args, onSuccess) {
 }
 
 function createSpawn(cwd, command, args, onPass, onFail) {
+  console.log(`Spawning command ${command} ${args.join(" ")} in directory ${cwd}`)
   const childProcess = spawn(command, args, {
     env: process.env,
     cwd,
@@ -65,7 +82,6 @@ function createSpawn(cwd, command, args, onPass, onFail) {
   });
 
   childProcess.stdout.on("data", (data) => {
-    console.log(data.toString());
     stdout += data.toString();
   });
 
@@ -76,9 +92,12 @@ function createSpawn(cwd, command, args, onPass, onFail) {
   childProcess.on("close", (code) => {
     if (code === 0) {
       // console.log(`${testName} passed.\nstderr:\n${stderr}stdout:\n${stdout}`);
+      console.log(`Command finished ${command} ${args.join(" ")} in directory ${cwd}`);
+      console.log(stdout);
       onPass(stdout, stderr);
     } else {
       // console.error(`${testName} failed.\nstderr:\n${stderr}stdout:\n${stdout}`);
+      console.log(stdout, stderr);
       onFail(stdout, stderr);
     }
   });
