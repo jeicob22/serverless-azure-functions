@@ -14,6 +14,7 @@
     "test": "jest",
     "test:ci": "npm run test -- --ci",
     "test:coverage": "npm run test -- --coverage",
+    "test:int": "cd integrationTests && ts-node run.ts",
     "compile": "tsc",
     "prebuild": "shx rm -rf lib/ && npm run test",
     "build": "npm run compile",
@@ -88,6 +89,7 @@
     "mock-spawn": "^0.2.6",
     "serverless": "^1.44.1",
     "shx": "^0.3.2",
+    "ts-node": "^8.8.2",
     "typescript": "^3.4.5"
   },
   "optionalDependencies": {
