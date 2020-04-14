@@ -1,18 +1,19 @@
-import { join } from "path";
-import { OfflineTest } from "./tests/offlineTest";
-import { getDirectories } from "./src/utils";
-import { DeployTest } from "./tests/deployTest";
 import { Clover } from "clvr";
+import { getDirectories } from "./tests/utils";
+import { offlineTest } from "./tests/offlineTest";
+import { defaultParameters } from "./parameters/default";
 
 const runAll = false;
 
-const allConfigurations = getDirectories("configurations").map((configDir) =>
-  join(__dirname, "configurations", configDir)
-);
+const allConfigurations = getDirectories("configurations");
 
 const configurations = (runAll) ? allConfigurations : [ "configurations/python36" ];
 
-Clover.runSuite([
-  OfflineTest,
-  // DeployTest,
-], configurations);
+Clover.run([
+  {
+    name: "Offline Test",
+    validations: offlineTest,
+    parameters: defaultParameters,
+    directories: configurations,
+  }
+])

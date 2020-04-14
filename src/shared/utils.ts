@@ -236,7 +236,7 @@ export class Utils {
       command
     );
     
-    // Append .cmd if running on windows
+    // Append  if running on windows
     if (process.platform === "win32") {
       localCommand += ".cmd";
     }
