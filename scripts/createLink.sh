@@ -3,6 +3,7 @@ mkdir tmp
 
 declare -a files=("lib" "package.json")
 
+# Copy files into temporary directory
 for i in "${files[@]}"
 do
   echo "Copying $i"
@@ -10,4 +11,6 @@ do
 done
 
 cd tmp
+
+# Create local symbolic link
 npm link

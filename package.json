@@ -16,6 +16,7 @@
     "test:coverage": "npm run test -- --coverage",
     "pretest:int": "npm run clean:int",
     "test:int": "cd integrationTests && ts-node run.ts",
+    "test:int:ci": "bash ./scripts/createLink.sh && npm run test:int python36,node12-windows-webpack",
     "clean:int": "rm -rf integrationTests/configurations/**/.serverless integrationTests/configurations/**/node_modules integrationTests/configurations/**/local.settings.json",
     "compile": "tsc",
     "prebuild": "shx rm -rf lib/ && npm run test",

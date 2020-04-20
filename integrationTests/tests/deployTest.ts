@@ -2,7 +2,7 @@ import { CommandValidation } from "clvr";
 
 export const deployTest: CommandValidation[] = [
   {
-    command: "npm i serverless-azure-functions@beta"
+    command: "npm link serverless-azure-functions"
   },
   {
     command: "sls deploy",
