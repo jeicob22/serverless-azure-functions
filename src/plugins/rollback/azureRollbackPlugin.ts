@@ -17,25 +17,10 @@ export class AzureRollbackPlugin extends AzureBasePlugin {
           "rollback"
         ],
         options: {
+          ...this.defaultAzureOptions,
           timestamp: {
             usage: "Timestamp of previous deployment",
             shortcut: "t",
-          },
-          resourceGroup: {
-            usage: "Resource group for the service",
-            shortcut: "g",
-          },
-          stage: {
-            usage: "Stage of service",
-            shortcut: "s"
-          },
-          region: {
-            usage: "Region of service",
-            shortcut: "r"
-          },
-          subscriptionId: {
-            usage: "Sets the Azure subscription ID",
-            shortcut: "i",
           },
         }
       }

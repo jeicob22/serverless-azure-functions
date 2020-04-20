@@ -15,22 +15,7 @@ export class AzureRemovePlugin extends AzureBasePlugin {
           "remove"
         ],
         options: {
-          resourceGroup: {
-            usage: "Resource group for the service",
-            shortcut: "g",
-          },
-          stage: {
-            usage: "Stage of service",
-            shortcut: "s"
-          },
-          region: {
-            usage: "Region of service",
-            shortcut: "r"
-          },
-          subscriptionId: {
-            usage: "Sets the Azure subscription ID",
-            shortcut: "i",
-          },
+          ...this.defaultAzureOptions,
         }
       }
     }
